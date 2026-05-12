@@ -1,3 +1,4 @@
+```flowchart
 flowchart TD
     A[用户触发进教室 OnEnterClass] --> B{录播等特殊课型?}
     B -->|是| C[关闭所有多开子进程<br/>清模块信息 / ClearRoomData<br/>主进程 PreEnterClass]
@@ -38,3 +39,4 @@ flowchart TD
         AA -->|是| AB[QtMultiClientHost<br/>raise_window_noop 置顶]
         AA -->|否| AC[ExePluginTool 启动新进程]
     end
+```
