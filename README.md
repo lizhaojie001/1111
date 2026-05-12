@@ -1,5 +1,4 @@
 @startuml
-!theme plain
 skinparam backgroundColor #FEFEFE
 skinparam defaultTextAlignment center
 
