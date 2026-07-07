@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>耳机检测工具 隐私政策</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.7;
+            color: #1d1d1f;
+            background-color: #fbfbfd;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 48px 56px;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1d1d1f;
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-top: 32px;
+            margin-bottom: 12px;
+        }
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+        p {
+            margin: 10px 0;
+            color: #424245;
+        }
+        ul {
+            margin: 10px 0;
+            padding-left: 24px;
+        }
+        li {
+            margin: 6px 0;
+            color: #424245;
+        }
+        strong {
+            color: #1d1d1f;
+            font-weight: 600;
+        }
+        .update-date {
+            color: #6e6e73;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #d2d2d7;
+            margin: 32px 0;
+        }
+        .summary {
+            background-color: #f5f5f7;
+            border-radius: 8px;
+            padding: 16px 20px;
+            font-weight: 500;
+            color: #1d1d1f;
+        }
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>耳机检测工具 隐私政策</h1>
+        <p class="update-date"><strong>最后更新日期：</strong>2026年7月8日</p>
+
+        <p>耳机检测工具（以下简称"本应用"）尊重并保护用户的隐私。本隐私政策说明本应用在数据收集、使用和保护方面的做法。</p>
+
+        <h2>1. 我们不收集任何数据</h2>
+        <p>本应用<strong>不会收集、存储、传输或分享任何用户个人数据</strong>。</p>
+        <p>具体而言，本应用：</p>
+        <ul>
+            <li><strong>不收集</strong>用户的个人信息</li>
+            <li><strong>不访问</strong>用户的通讯录、照片、位置等敏感数据</li>
+            <li><strong>不联网</strong>传输任何数据（无网络请求功能）</li>
+            <li><strong>不使用</strong>分析工具或第三方 SDK 追踪用户行为</li>
+            <li><strong>不存储</strong>任何检测数据到磁盘</li>
+        </ul>
+        <p>所有音频设备的检测操作均在用户的本地计算机上完成，结果仅显示在应用界面中，关闭应用后即消失。</p>
+
+        <h2>2. 应用申请的权限及用途</h2>
+        <p>为完成耳机检测功能，本应用需要申请以下系统权限：</p>
+
+        <h3>2.1 麦克风访问权限</h3>
+        <ul>
+            <li><strong>用途</strong>：用于测试耳机的麦克风输入（说）功能是否正常工作</li>
+            <li><strong>触发时机</strong>：仅在用户主动点击"测试麦克风"按钮时启动</li>
+            <li><strong>数据处理</strong>：麦克风采集的音频数据仅在内存中实时处理用于显示音量条，<strong>不录音、不保存、不上传</strong></li>
+            <li><strong>关闭方式</strong>：用户点击"停止监听"或关闭应用后，麦克风访问立即停止</li>
+        </ul>
+
+        <h3>2.2 蓝牙访问权限</h3>
+        <ul>
+            <li><strong>用途</strong>：用于获取已连接蓝牙耳机的连接状态和电量信息</li>
+            <li><strong>触发时机</strong>：应用启动时自动查询</li>
+            <li><strong>数据处理</strong>：仅读取蓝牙设备的名称、连接状态、电量百分比等系统公开信息，<strong>不读取或传输蓝牙设备的任何私有数据</strong></li>
+        </ul>
+
+        <h3>2.3 音频设备访问</h3>
+        <ul>
+            <li><strong>用途</strong>：用于枚举系统音频设备、获取设备属性、播放测试音</li>
+            <li><strong>数据处理</strong>：通过 macOS CoreAudio 框架访问系统音频设备列表，播放的测试音为应用内置的固定音频片段，不涉及用户音频内容的读取或传输</li>
+        </ul>
+
+        <h2>3. 数据安全</h2>
+        <ul>
+            <li>本应用在沙盒（App Sandbox）环境中运行，遵循 macOS 安全规范</li>
+            <li>应用启用了 Hardened Runtime，防止代码被篡改</li>
+            <li>所有操作均在本地完成，不存在数据泄露风险</li>
+        </ul>
+
+        <h2>4. 儿童隐私</h2>
+        <p>本应用不针对 13 岁以下儿童，也不会故意收集儿童的任何信息。由于本应用不收集任何用户数据，因此对儿童隐私无任何影响。</p>
+
+        <h2>5. 第三方服务</h2>
+        <p>本应用<strong>不使用任何第三方服务</strong>，不包含任何第三方分析 SDK、广告框架或追踪代码。</p>
+
+        <h2>6. 隐私政策变更</h2>
+        <p>本隐私政策可能会不时更新。任何变更都将在此页面发布，并更新"最后更新日期"。建议用户定期查阅本页面以了解最新信息。</p>
+
+        <h2>7. 联系我们</h2>
+        <p>如果您对本隐私政策有任何疑问，请通过以下方式联系我们：</p>
+        <ul>
+            <li>邮箱：<a href="mailto:your-email@example.com">your-email@example.com</a></li>
+        </ul>
+
+        <hr>
+
+        <p class="summary">简而言之：本应用是一个纯本地工具，不收集、不存储、不传输任何用户数据，您可以放心使用。</p>
+    </div>
+</body>
+</html>
