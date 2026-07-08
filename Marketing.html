@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>耳机检测工具 - 一键检测耳机麦克风</title>
+    <meta name="description" content="专业 macOS 耳机检测工具，支持音频输出测试、麦克风输入测试、蓝牙电量显示、设备切换管理。">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #f5f5f7;
+            background-color: #000000;
+            overflow-x: hidden;
+        }
+
+        /* 导航栏 */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 19px;
+            font-weight: 600;
+            color: #f5f5f7;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #1dd1a1);
+            border-radius: 7px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+        .nav-links a {
+            color: #f5f5f7;
+            text-decoration: none;
+            font-size: 14px;
+            opacity: 0.85;
+            transition: opacity 0.3s;
+        }
+        .nav-links a:hover {
+            opacity: 1;
+        }
+        .nav-btn {
+            background: #0071e3;
+            color: white !important;
+            padding: 8px 16px;
+            border-radius: 980px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 1 !important;
+        }
+        .nav-btn:hover {
+            background: #0077ed;
+        }
+
+        /* Hero 区 */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px 20px 80px;
+            position: relative;
+            background:
+                radial-gradient(ellipse at top, rgba(72, 219, 251, 0.15), transparent 50%),
+                radial-gradient(ellipse at bottom right, rgba(255, 107, 107, 0.12), transparent 50%),
+                radial-gradient(ellipse at bottom left, rgba(29, 209, 161, 0.12), transparent 50%);
+        }
+        .hero-eyebrow {
+            font-size: 21px;
+            color: #86868b;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        .hero-title {
+            font-size: 80px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #1dd1a1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 24px;
+            line-height: 1.1;
+        }
+        .hero-subtitle {
+            font-size: 28px;
+            color: #f5f5f7;
+            max-width: 720px;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        .hero-tagline {
+            font-size: 19px;
+            color: #86868b;
+            max-width: 600px;
+            margin-bottom: 40px;
+        }
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .btn-primary {
+            background: #0071e3;
+            color: white;
+            padding: 16px 32px;
+            border-radius: 980px;
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary:hover {
+            background: #0077ed;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #f5f5f7;
+            padding: 16px 32px;
+            border-radius: 980px;
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* 特性区 */
+        .section {
+            padding: 120px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+        .section-eyebrow {
+            font-size: 17px;
+            color: #86868b;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .section-title {
+            font-size: 56px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #f5f5f7;
+            line-height: 1.1;
+        }
+        .section-subtitle {
+            font-size: 21px;
+            color: #86868b;
+            margin-top: 16px;
+            max-width: 680px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 32px;
+        }
+        .feature-card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+            border-radius: 24px;
+            padding: 40px 32px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.15);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+        }
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #0071e3, #00b4d8);
+        }
+        .feature-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #f5f5f7;
+            margin-bottom: 8px;
+        }
+        .feature-desc {
+            font-size: 15px;
+            color: #a1a1a6;
+            line-height: 1.6;
+        }
+
+        /* 设备类型区 */
+        .devices-section {
+            background: linear-gradient(180deg, #000, #0a0a0c, #000);
+            padding: 120px 40px;
+        }
+        .devices-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .device-card {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s;
+        }
+        .device-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-4px);
+        }
+        .device-emoji {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        .device-name {
+            font-size: 17px;
+            font-weight: 600;
+            color: #f5f5f7;
+            margin-bottom: 8px;
+        }
+        .device-desc {
+            font-size: 13px;
+            color: #86868b;
+        }
+
+        /* 截图展示 */
+        .screenshot-section {
+            padding: 120px 40px;
+            text-align: center;
+            background: #0a0a0c;
+        }
+        .screenshot-frame {
+            max-width: 960px;
+            margin: 60px auto 0;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+            background: #1a1a1c;
+            padding: 16px;
+        }
+        .screenshot-placeholder {
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            background: linear-gradient(135deg, #1d1d1f 0%, #2d2d2f 100%);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #6e6e73;
+            font-size: 15px;
+            gap: 16px;
+        }
+        .screenshot-mock {
+            width: 80%;
+            height: 70%;
+            background: linear-gradient(135deg, #2a2a2c, #3a3a3c);
+            border-radius: 8px;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            padding: 16px;
+            gap: 12px;
+            color: #a1a1a6;
+            text-align: left;
+            font-size: 12px;
+        }
+        .mock-top {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+        .mock-device {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 8px;
+        }
+        .mock-device-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            border-radius: 8px;
+        }
+        .mock-bar {
+            height: 6px;
+            background: linear-gradient(90deg, #1dd1a1 0%, #1dd1a1 60%, rgba(255, 255, 255, 0.1) 60%);
+            border-radius: 3px;
+            margin-top: 4px;
+        }
+
+        /* 隐私区 */
+        .privacy-section {
+            padding: 120px 40px;
+            text-align: center;
+            background: radial-gradient(ellipse at center, rgba(29, 209, 161, 0.08), transparent 60%);
+        }
+        .privacy-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(29, 209, 161, 0.15);
+            color: #1dd1a1;
+            border-radius: 980px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            border: 1px solid rgba(29, 209, 161, 0.3);
+        }
+        .privacy-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: #f5f5f7;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+        .privacy-desc {
+            font-size: 21px;
+            color: #86868b;
+            max-width: 640px;
+            margin: 0 auto 40px;
+        }
+        .privacy-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .privacy-point {
+            padding: 24px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .privacy-point-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+        .privacy-point-text {
+            font-size: 15px;
+            color: #f5f5f7;
+            font-weight: 500;
+        }
+
+        /* 系统要求 */
+        .requirements-section {
+            padding: 100px 40px;
+            text-align: center;
+            background: #0a0a0c;
+        }
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 32px;
+            max-width: 900px;
+            margin: 40px auto 0;
+        }
+        .req-item {
+            padding: 32px 24px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .req-label {
+            font-size: 13px;
+            color: #86868b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+        .req-value {
+            font-size: 19px;
+            color: #f5f5f7;
+            font-weight: 500;
+        }
+
+        /* 底部 CTA */
+        .final-cta {
+            padding: 140px 40px;
+            text-align: center;
+            background:
+                radial-gradient(ellipse at center, rgba(72, 219, 251, 0.12), transparent 60%),
+                radial-gradient(ellipse at top, rgba(255, 107, 107, 0.08), transparent 50%);
+        }
+        .final-cta-title {
+            font-size: 56px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #1dd1a1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 24px;
+            line-height: 1.1;
+        }
+        .final-cta-subtitle {
+            font-size: 21px;
+            color: #86868b;
+            margin-bottom: 40px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            background: #000;
+        }
+        .footer-links {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .footer-links a {
+            color: #86868b;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        .footer-links a:hover {
+            color: #f5f5f7;
+        }
+        .copyright {
+            color: #6e6e73;
+            font-size: 13px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 48px; }
+            .hero-subtitle { font-size: 21px; }
+            .section-title { font-size: 36px; }
+            .final-cta-title { font-size: 36px; }
+            .privacy-title { font-size: 32px; }
+            .devices-grid { grid-template-columns: repeat(2, 1fr); }
+            nav { padding: 12px 20px; }
+            .nav-links { gap: 16px; }
+            .nav-links a:not(.nav-btn) { display: none; }
+            .section { padding: 80px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <span class="logo-icon">耳</span>
+            <span>耳机检测工具</span>
+        </div>
+        <div class="nav-links">
+            <a href="#features">功能</a>
+            <a href="#devices">设备支持</a>
+            <a href="#privacy">隐私</a>
+            <a href="#support">支持</a>
+            <a href="#" class="nav-btn">下载</a>
+        </div>
+    </nav>
+
+    <!-- Hero 区 -->
+    <section class="hero">
+        <p class="hero-eyebrow">专为 Mac 用户打造</p>
+        <h1 class="hero-title">耳机检测工具</h1>
+        <h2 class="hero-subtitle">一键检测耳机音频与麦克风，让每一个声音都被听见</h2>
+        <p class="hero-tagline">支持内建、有线、蓝牙、USB 全类型设备 · 实时音量显示 · 蓝牙电量监控</p>
+        <div class="hero-cta">
+            <a href="#" class="btn-primary">
+                <span>下载 Mac 版</span>
+            </a>
+            <a href="#features" class="btn-secondary">了解功能</a>
+        </div>
+    </section>
+
+    <!-- 功能特性 -->
+    <section class="section" id="features">
+        <div class="section-header">
+            <p class="section-eyebrow">核心功能</p>
+            <h2 class="section-title">为检测而生</h2>
+            <p class="section-subtitle">从音频输出到麦克风输入，从设备切换到电量监控，一切尽在掌握</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔊</div>
+                <h3 class="feature-title">音频输出测试</h3>
+                <p class="feature-desc">播放测试音，快速验证耳机左右声道、音质、音量是否正常工作，告别哑巴耳机。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎤</div>
+                <h3 class="feature-title">麦克风输入测试</h3>
+                <p class="feature-desc">实时音量条显示麦克风输入强度，直观判断麦克风是否正常拾音，通话会议无后顾之忧。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔋</div>
+                <h3 class="feature-title">蓝牙电量显示</h3>
+                <p class="feature-desc">自动检测已连接蓝牙耳机的电量状态，电量一目了然，告别突然没电的尴尬。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <h3 class="feature-title">一键设备切换</h3>
+                <p class="feature-desc">支持在多个音频设备间快速切换，无需进入系统设置，提升工作效率。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎚️</div>
+                <h3 class="feature-title">音量精细调节</h3>
+                <p class="feature-desc">直接在应用内调节设备音量，支持百分比显示，精准控制每一个细节。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📋</div>
+                <h3 class="feature-title">设备详情查看</h3>
+                <p class="feature-desc">显示设备传输类型、采样率、输入输出能力等完整信息，专业用户的好帮手。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 设备类型 -->
+    <section class="devices-section" id="devices">
+        <div class="section-header">
+            <p class="section-eyebrow">全设备支持</p>
+            <h2 class="section-title">支持所有类型耳机</h2>
+            <p class="section-subtitle">无论你使用什么耳机，都能轻松检测</p>
+        </div>
+        <div class="devices-grid">
+            <div class="device-card">
+                <div class="device-emoji">💻</div>
+                <div class="device-name">内建设备</div>
+                <div class="device-desc">Mac 内置扬声器与麦克风</div>
+            </div>
+            <div class="device-card">
+                <div class="device-emoji">🎧</div>
+                <div class="device-name">有线耳机</div>
+                <div class="device-desc">3.5mm 接口耳机</div>
+            </div>
+            <div class="device-card">
+                <div class="device-emoji">📻</div>
+                <div class="device-name">蓝牙耳机</div>
+                <div class="device-desc">AirPods 及各类蓝牙耳机</div>
+            </div>
+            <div class="device-card">
+                <div class="device-emoji">🔌</div>
+                <div class="device-name">USB 设备</div>
+                <div class="device-desc">USB 接口音频设备</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 截图展示 -->
+    <section class="screenshot-section">
+        <div class="section-header">
+            <p class="section-eyebrow">直观界面</p>
+            <h2 class="section-title">简洁优雅的操作体验</h2>
+            <p class="section-subtitle">Apple 风格设计，一目了然的操作界面</p>
+        </div>
+        <div class="screenshot-frame">
+            <div class="screenshot-placeholder">
+                <div class="screenshot-mock">
+                    <div class="mock-top">
+                        <span>🎧 耳机检测工具</span>
+                        <span>●●●</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:12px;">
+                        <div class="mock-device">
+                            <div class="mock-device-icon"></div>
+                            <div style="flex:1;">
+                                <div style="color:#f5f5f7;font-weight:600;">AirPods Pro</div>
+                                <div style="font-size:11px;color:#86868b;">蓝牙 · 电量 85%</div>
+                                <div class="mock-bar"></div>
+                            </div>
+                        </div>
+                        <div class="mock-device">
+                            <div class="mock-device-icon" style="background:linear-gradient(135deg, #48dbfb, #0071e3);"></div>
+                            <div style="flex:1;">
+                                <div style="color:#f5f5f7;font-weight:600;">MacBook Pro 扬声器</div>
+                                <div style="font-size:11px;color:#86868b;">内建 · 输出设备</div>
+                                <div class="mock-bar" style="background:linear-gradient(90deg, #48dbfb 0%, #48dbfb 45%, rgba(255,255,255,0.1) 45%);"></div>
+                            </div>
+                        </div>
+                        <div class="mock-device">
+                            <div class="mock-device-icon" style="background:linear-gradient(135deg, #1dd1a1, #00b894);"></div>
+                            <div style="flex:1;">
+                                <div style="color:#f5f5f7;font-weight:600;">MacBook 麦克风</div>
+                                <div style="font-size:11px;color:#86868b;">内建 · 输入设备</div>
+                                <div class="mock-bar" style="background:linear-gradient(90deg, #1dd1a1 0%, #1dd1a1 30%, rgba(255,255,255,0.1) 30%);"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;color:#6e6e73;font-size:11px;border-top:1px solid rgba(255,255,255,0.1);padding-top:8px;">
+                        <span>🔊 测试音频</span>
+                        <span>🎤 测试麦克风</span>
+                        <span>📋 设备详情</span>
+                    </div>
+                </div>
+                <p>应用界面预览</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 隐私保护 -->
+    <section class="privacy-section" id="privacy">
+        <div class="privacy-badge">🔒 隐私至上</div>
+        <h2 class="privacy-title">我们绝不收集你的数据</h2>
+        <p class="privacy-desc">耳机检测工具是一个纯本地应用，所有操作都在你的 Mac 上完成，你的数据永远只属于你。</p>
+        <div class="privacy-points">
+            <div class="privacy-point">
+                <div class="privacy-point-icon">🚫</div>
+                <div class="privacy-point-text">不收集任何个人信息</div>
+            </div>
+            <div class="privacy-point">
+                <div class="privacy-point-icon">🌐</div>
+                <div class="privacy-point-text">无网络请求，完全离线</div>
+            </div>
+            <div class="privacy-point">
+                <div class="privacy-point-icon">💾</div>
+                <div class="privacy-point-text">不存储任何数据到磁盘</div>
+            </div>
+            <div class="privacy-point">
+                <div class="privacy-point-icon">🛡️</div>
+                <div class="privacy-point-text">沙盒运行，安全隔离</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 系统要求 -->
+    <section class="requirements-section">
+        <div class="section-header">
+            <p class="section-eyebrow">系统要求</p>
+            <h2 class="section-title">广泛兼容</h2>
+        </div>
+        <div class="requirements-grid">
+            <div class="req-item">
+                <div class="req-label">操作系统</div>
+                <div class="req-value">macOS 14.0+</div>
+            </div>
+            <div class="req-item">
+                <div class="req-label">处理器</div>
+                <div class="req-value">Apple Silicon / Intel</div>
+            </div>
+            <div class="req-item">
+                <div class="req-label">架构</div>
+                <div class="req-value">Universal Binary</div>
+            </div>
+            <div class="req-item">
+                <div class="req-label">语言</div>
+                <div class="req-value">中文 / English</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 底部 CTA -->
+    <section class="final-cta">
+        <h2 class="final-cta-title">立即开始检测</h2>
+        <p class="final-cta-subtitle">让你的耳机始终保持最佳状态</p>
+        <div class="hero-cta">
+            <a href="#" class="btn-primary">下载 Mac 版</a>
+            <a href="#support" class="btn-secondary">获取支持</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="support">
+        <div class="footer-links">
+            <a href="#features">功能介绍</a>
+            <a href="#privacy">隐私政策</a>
+            <a href="#">技术支持</a>
+            <a href="#">联系我们</a>
+        </div>
+        <p class="copyright">© 2026 耳机检测工具. 保留所有权利.</p>
+    </footer>
+</body>
+</html>
